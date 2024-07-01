@@ -3,17 +3,32 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { db } from "../utils/db.js";
+import {
+  validatePostLogin,
+  validatePostRegister,
+} from "../middlewares/auth-validate.js";
 
 const authRouter = Router();
 
 // 🐨 Todo: Exercise #1
 // ให้สร้าง API เพื่อเอาไว้ Register ตัว User แล้วเก็บข้อมูลไว้ใน Database ตามตารางที่ออกแบบไว้
 
-authRouter.post("/register", async (req, res) => {
-  const userData = { ...req.body };
+authRouter.post("/register", [validatePostRegister], async (req, res) => {
+  const userData = {
+    username: req.body.username,
+    password: req.body.password,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+  };
   const salt = await bcrypt.genSalt(10);
   userData.password = await bcrypt.hash(userData.password, salt);
-  const result = await db.collection("users").insertOne(userData);
+  try {
+    const result = await db.collection("users").insertOne(userData);
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Server could not connect database" });
+  }
   return res.status(201).json({
     message: "User has been created successfully",
   });
@@ -21,10 +36,17 @@ authRouter.post("/register", async (req, res) => {
 
 // 🐨 Todo: Exercise #3
 // ให้สร้าง API เพื่อเอาไว้ Login ตัว User ตามตารางที่ออกแบบไว้
-authRouter.post("/login", async (req, res) => {
-  const user = await db
-    .collection("users")
-    .findOne({ username: req.body.username });
+authRouter.post("/login", [validatePostLogin], async (req, res) => {
+  let user;
+  try {
+    user = await db
+      .collection("users")
+      .findOne({ username: req.body.username });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Server could not connect database" });
+  }
 
   //--- validate username
   if (!user) {
@@ -52,9 +74,6 @@ authRouter.post("/login", async (req, res) => {
     message: "login successfully",
     token: token,
   });
-  // catch (err) {
-  //     return res.status(500).json({ message: "Server Error" });
-  //   }
 });
 
 export default authRouter;
