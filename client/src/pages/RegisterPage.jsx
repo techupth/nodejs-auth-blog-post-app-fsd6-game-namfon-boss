@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/authentication";
 
 function RegisterPage() {
   const [username, setUsername] = useState("");
@@ -6,10 +8,15 @@ function RegisterPage() {
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate();
+  const { register } = useAuth();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     // 🐨 Todo: Exercise #2
     // นำ Function `register` ใน AuthContext มา Execute ใน Event Handler ตรงนี้
+    register({ username, password, firstName, lastName });
+    navigate("/login");
   };
 
   return (
@@ -77,6 +84,13 @@ function RegisterPage() {
           </label>
         </div>
         <div className="form-actions">
+          <button
+            onClick={() => {
+              navigate("/login");
+            }}
+          >
+            Login
+          </button>
           <button type="submit">Submit</button>
         </div>
       </form>

@@ -209,7 +209,7 @@ form h1 {
 
 .form-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
 }
 
 /* general elements */
