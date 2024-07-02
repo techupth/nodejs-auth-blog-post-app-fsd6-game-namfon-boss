@@ -52,7 +52,7 @@ authRouter.post("/login", async (req, res) => {
       lastName: user.lastName,
     },
     process.env.SECRET_KEY,
-    { expiresIn: "900000" }
+    { expiresIn: "60000" }
   );
   return res.json({
     message: "login successfully",
