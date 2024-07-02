@@ -11,31 +11,38 @@ function AuthProvider(props) {
     user: null,
   });
 
-  const login = async (data) => {
+  const login = async (userInputData) => {
     // 🐨 Todo: Exercise #4
     //  ให้เขียน Logic ของ Function `login` ตรงนี้
     //  Function `login` ทำหน้าที่สร้าง Request ไปที่ API POST /login
     //  ที่สร้างไว้ด้านบนพร้อมกับ Body ที่กำหนดไว้ในตารางที่ออกแบบไว้
-    const result = await axios.post("http://localhost:4000/login", data);
-    console.log(result);
+    const result = await axios.post(
+      "http://localhost:4000/login",
+      userInputData
+    );
+    // console.log(result);
     localStorage.setItem("token", result.data.token);
     const dataFromToken = jwtDecode(result.data.token);
     setState({ ...state, user: dataFromToken });
   };
 
-  const register = async (data) => {
+  const register = async (userInputData) => {
     // 🐨 Todo: Exercise #2
     //  ให้เขียน Logic ของ Function `register` ตรงนี้
     //  Function register ทำหน้าที่สร้าง Request ไปที่ API POST /register
     //  ที่สร้างไว้ด้านบนพร้อมกับ Body ที่กำหนดไว้ในตารางที่ออกแบบไว้
-    const result = await axios.post("http://localhost:4000/register", data);
+    const result = await axios.post(
+      "http://localhost:4000/register",
+      userInputData
+    );
   };
 
   const logout = () => {
     // 🐨 Todo: Exercise #7
     //  ให้เขียน Logic ของ Function `logout` ตรงนี้
     //  Function logout ทำหน้าที่ในการลบ JWT Token ออกจาก Local Storage
-    const token = localStorage.getItem("token");
+    localStorage.removeItem("token");
+    setState({ ...state, user: null });
   };
 
   const isAuthenticated = Boolean(localStorage.getItem("token"));
